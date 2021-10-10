@@ -10,7 +10,7 @@ public class RecordsViewModel extends ViewModel {
 
     public RecordsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("Records");
     }
 
     public LiveData<String> getText() {

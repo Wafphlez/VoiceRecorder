@@ -6,4 +6,8 @@
     <string name="start_using">Start using</string>
     <string name="greeting_message">This is the voice recorder app for Android. In this application you can record your voice and listen to it anytime.</string>
     <string name="hello">Hello</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="save_name">Save_00.00.0000_00-00-00.wav</string>
+    <string name="record_current_time">00:00</string>
+    <string name="record_time">99:99</string>
 </resources>
