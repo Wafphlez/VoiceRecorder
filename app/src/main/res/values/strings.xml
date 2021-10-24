@@ -10,4 +10,5 @@
     <string name="save_name">Save_00.00.0000_00-00-00.wav</string>
     <string name="record_current_time">00:00</string>
     <string name="record_time">99:99</string>
+    <string name="stop_recording">Stop Recording</string>
 </resources>
