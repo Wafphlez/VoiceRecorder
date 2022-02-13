@@ -28,7 +28,7 @@ import java.util.Arrays;
 public class RecordsFragment extends Fragment {
 
     private RecordsViewModel recordsViewModel;
-    ListView listView;
+    public ListView listView;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -42,13 +42,12 @@ public class RecordsFragment extends Fragment {
             }
         });
 
+        //DisplayAudioFiles();
 
         ContextWrapper contextWrapper = new ContextWrapper(getContext());
         File musicDirectory = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
 
-
         File directory = new File(Environment.DIRECTORY_MUSIC);
-        //File[] files = musicDirectory.listFiles();
         ArrayList<File> files = new ArrayList<>(Arrays.asList(musicDirectory.listFiles()));
 
         listView = root.findViewById(R.id.listView);
@@ -61,4 +60,37 @@ public class RecordsFragment extends Fragment {
 
         return root;
     }
+
+    public ArrayList<File> FindAudioFile(File file){
+        ArrayList<File> arrayList = new ArrayList<>();
+
+        File[] files = file.listFiles();
+
+        for (File singlefile: files){
+            if (singlefile.isDirectory() && !singlefile.isHidden()){
+                arrayList.addAll(FindAudioFile(singlefile));
+            }
+            else{
+                if (singlefile.getName().endsWith(".wav")){
+                    arrayList.add(singlefile);
+                }
+            }
+        }
+        return arrayList;
+    }
+
+    private void DisplayAudioFiles(){
+        ContextWrapper contextWrapper = new ContextWrapper(getContext());
+        File musicDirectory = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+
+        final ArrayList<File> myFiles = FindAudioFile(musicDirectory.getAbsoluteFile());
+
+        String [] items = new String[myFiles.size()];
+        for (int i = 0; i<myFiles.size(); i++){
+            items[i] = myFiles.get(i).getName().replace(".wav", "");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.record_item, items);
+        listView.setAdapter(adapter);
+    }
+
 }

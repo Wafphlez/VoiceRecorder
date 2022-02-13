@@ -23,79 +23,72 @@
             android:layout_height="match_parent"
             android:layout_marginVertical="6dp"
             android:layout_marginStart="12dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="50dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/recordName"
+            <LinearLayout
+                android:gravity="left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="top"
-                android:text="@string/save_name"
-                android:textSize="12sp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/recordDate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <SeekBar
-                android:alpha="0"
-                android:id="@+id/seekBar"
-                android:layout_width="match_parent"
-                android:layout_height="9dp"
-                android:layout_marginTop="4dp"
-                android:paddingHorizontal="0dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:progress="10"
-                android:progressTint="?colorPrimary"
-                android:thumb="@drawable/thumb_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recordName" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:alpha="0"
-                android:id="@+id/seekBarTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/seekBar">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/currentTime"
+                    android:id="@+id/recordName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/record_current_time"
-                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:text="@string/save_name"
+                    android:textColor="?colorPrimary"
+                    android:textSize="16sp"
+                    android:maxLines="1"
+                    android:scrollbars = "horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/editName"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/recordTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/record_time"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/recordDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:text="21.09.2021"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+        <ImageButton
+            android:id="@+id/editName"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="5dp"
+            android:background="@drawable/ic_pencil"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout"
-            android:layout_width="80dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="12dp"
             android:gravity="right|center_vertical"
@@ -103,18 +96,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/stopButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_stop_button"
-                android:contentDescription="@string/stop_recording"
-                android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/playPause"
-                app:layout_constraintHorizontal_bias="0.75"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+
 
             <ImageButton
                 android:id="@+id/playPause"

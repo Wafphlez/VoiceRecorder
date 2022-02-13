@@ -11,6 +11,6 @@
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@android:color/white</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="fontFamily">@font/roboto_slab_regular</item>
+        <item name="android:fontFamily">@font/roboto_slab_regular</item>
     </style>
 </resources>
