@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.wafphlez.voicerecorder.ui.settings.SettingsFragment"
-        android:label="@string/title_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:name="com.wafphlez.voicerecorder.ui.settings.EditorFragment"
+        android:label="@string/title_editor"
+        tools:layout="@layout/fragment_editor" />
 </navigation>

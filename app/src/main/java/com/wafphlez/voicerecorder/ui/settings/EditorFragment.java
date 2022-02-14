@@ -1,11 +1,14 @@
 package com.wafphlez.voicerecorder.ui.settings;
 
 import android.content.ContextWrapper;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,30 +25,49 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
-public class SettingsFragment extends Fragment {
+public class EditorFragment extends Fragment {
 
-    private SettingsViewModel settingsViewModel;
+    private EditorViewModel editorViewModel;
 
+    TextView saveName;
+    TextView dateChanged;
+    TextView size;
+    TextView length;
+
+
+    Button nextAudioVizualizer;
+
+    int audioCounter = 0;
     public PlayerVisualizerView playerVisualizerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        settingsViewModel =
-                new ViewModelProvider(this).get(SettingsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        final TextView textView = root.findViewById(R.id.text_settings);
+        editorViewModel =
+                new ViewModelProvider(this).get(EditorViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_editor, container, false);
+        final TextView textView = root.findViewById(R.id.text_editor);
 
         playerVisualizerView = root.findViewById(R.id.visualizer);
+        saveName = root.findViewById(R.id.saveName);
+        size = root.findViewById(R.id.size);
+        length = root.findViewById(R.id.length);
 
-        settingsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        dateChanged = root.findViewById(R.id.dateChanged);
+
+        editorViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
             }
         });
+
+
+        nextAudioVizualizer = root.findViewById(R.id.nextAudioVizualizer);
 
 
         ContextWrapper contextWrapper = new ContextWrapper(getContext());
@@ -55,10 +77,37 @@ public class SettingsFragment extends Fragment {
         ArrayList<File> files = new ArrayList<>(Arrays.asList(musicDirectory.listFiles()));
 
 
+        RefreshAudioInfo(files);
 
+        nextAudioVizualizer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (audioCounter >= files.size() - 1) {
+                    audioCounter = 0;
+                } else {
+                    audioCounter++;
+                }
+
+                RefreshAudioInfo(files);
+            }
+        });
 
 
         return root;
+    }
+
+    private void RefreshAudioInfo(ArrayList<File> files) {
+        File file = files.get(audioCounter);
+
+        Date lastModDate = new Date(file.lastModified());
+
+        saveName.setText(file.getName().replace(".wav", ""));
+        dateChanged.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
+        int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+        size.setText(file_size + "KB");
+
+        updateVisualizer(fileToBytes(files.get(audioCounter)));
     }
 
     public void updateVisualizer(byte[] bytes) {
