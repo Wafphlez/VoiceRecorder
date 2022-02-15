@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,10 +36,16 @@ public class EditorFragment extends Fragment {
     private EditorViewModel editorViewModel;
 
     TextView saveName;
+
     TextView dateChanged;
     TextView size;
     TextView length;
 
+    TextView volumeSliderValue;
+    TextView pitchSliderValue;
+
+    SeekBar volumeSlider;
+    SeekBar pitchSlider;
 
     Button nextAudioVizualizer;
 
@@ -56,6 +63,10 @@ public class EditorFragment extends Fragment {
         saveName = root.findViewById(R.id.saveName);
         size = root.findViewById(R.id.size);
         length = root.findViewById(R.id.length);
+        volumeSlider = root.findViewById(R.id.volumeSlider);
+        pitchSlider = root.findViewById(R.id.pitchSlider);
+        volumeSliderValue = root.findViewById(R.id.volumeSliderValue);
+        pitchSliderValue = root.findViewById(R.id.pitchSliderValue);
 
         dateChanged = root.findViewById(R.id.dateChanged);
 
@@ -90,6 +101,68 @@ public class EditorFragment extends Fragment {
                 }
 
                 RefreshAudioInfo(files);
+            }
+        });
+
+        volumeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int max = volumeSlider.getMax();
+            int progressRaw;
+            int progress;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                progressRaw = seekBar.getProgress();
+                progress = progressRaw - max/2;
+                String value = "";
+
+                if (progress>0){
+                    value="+"+progress;
+                }
+                else{
+                    value = progress+"";
+                }
+                volumeSliderValue.setText(value);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        pitchSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int max = volumeSlider.getMax();
+            int progressRaw;
+            int progress;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                progressRaw = seekBar.getProgress();
+                progress = progressRaw - max/2;
+                String value = "";
+
+                if (progress>0){
+                    value="+"+progress;
+                }
+                else{
+                    value = progress+"";
+                }
+                pitchSliderValue.setText(value);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
