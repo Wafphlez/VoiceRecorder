@@ -39,29 +39,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
+
             <TextView
                 android:id="@+id/saveName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
                 android:text="@string/save_name"
                 android:textColor="?colorPrimary"
-                android:layout_marginHorizontal="5dp"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
+
             <ImageButton
                 android:id="@+id/editName"
                 android:layout_width="16sp"
                 android:layout_height="16sp"
-                android:background="@drawable/ic_pencil"
+                android:layout_gravity="center"
                 android:layout_marginHorizontal="5dp"
-                android:layout_gravity="center"/>
+                android:background="@drawable/ic_pencil" />
 
         </LinearLayout>
 
         <com.wafphlez.voicerecorder.PlayerVisualizerView
-            android:layout_width="match_parent"
             android:id="@+id/visualizer"
-            android:layout_margin="10dp"
-            android:layout_height="50dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,13 +77,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="5dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/changed" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -98,13 +101,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="5dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/length" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -121,13 +125,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="5dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/size" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -163,28 +168,29 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:text="@string/volume"
-                    android:textColor="@color/dark_grey"/>
+                    android:textColor="@color/dark_grey" />
 
                 <TextView
                     android:id="@+id/volumeSliderValue"
                     android:layout_width="24dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sample_number"
-                    android:layout_marginStart="10dp"/>
-                
+                    android:layout_marginStart="10dp"
+                    android:text="@string/sample_number" />
+
                 <SeekBar
                     android:id="@+id/volumeSlider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:thumbTint="?colorPrimary"
-                    android:progressTint="#00ffffff"
+                    android:layout_gravity="center"
+                    android:max="20"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
-                    android:max="20"
                     android:progress="10"
+                    android:progressTint="#00ffffff"
                     android:thumb="@drawable/thumb_image"
-                    android:layout_gravity="center"/>
+                    android:thumbTint="?colorPrimary" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,37 +201,93 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:text="@string/pitch"
-                    android:textColor="@color/dark_grey"/>
+                    android:textColor="@color/dark_grey" />
 
                 <TextView
                     android:id="@+id/pitchSliderValue"
                     android:layout_width="24dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sample_number"
-                    android:layout_marginStart="10dp"/>
+                    android:layout_marginStart="10dp"
+                    android:text="@string/sample_number" />
 
                 <SeekBar
                     android:id="@+id/pitchSlider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:thumbTint="?colorPrimary"
-                    android:progressTint="#00ffffff"
+                    android:layout_gravity="center"
+                    android:max="20"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
-                    android:max="20"
                     android:progress="10"
+                    android:progressTint="#00ffffff"
                     android:thumb="@drawable/thumb_image"
-                    android:layout_gravity="center"/>
+                    android:thumbTint="?colorPrimary" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/nextAudioVizualizer"
-            android:text="@string/debug"/>
+        <!--        <Button-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:id="@+id/nextAudioVizualizer"-->
+        <!--            android:text="@string/debug"/>-->
+
+
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/record_background"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/prevSkip"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:backgroundTint="?colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/playPause"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:backgroundTint="?colorPrimary"
+                android:layout_marginHorizontal="10dp"/>
+
+            <ImageButton
+                android:id="@+id/nextSkip"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:backgroundTint="?colorPrimary" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/audioSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:progress="0"
+            android:progressTint="?colorPrimary"
+            android:thumb="@drawable/thumb_image"
+            android:thumbTint="?colorPrimary" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

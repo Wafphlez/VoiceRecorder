@@ -16,14 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.wafphlez.voicerecorder.Helper;
 import com.wafphlez.voicerecorder.ListAdapter;
 import com.wafphlez.voicerecorder.R;
-import com.wafphlez.voicerecorder.databinding.ActivityMainBinding;
-import com.wafphlez.voicerecorder.databinding.FragmentRecordsBinding;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class RecordsFragment extends Fragment {
 
@@ -42,36 +40,30 @@ public class RecordsFragment extends Fragment {
             }
         });
 
-        //DisplayAudioFiles();
-
-        ContextWrapper contextWrapper = new ContextWrapper(getContext());
-        File musicDirectory = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-
-        File directory = new File(Environment.DIRECTORY_MUSIC);
-        ArrayList<File> files = new ArrayList<>(Arrays.asList(musicDirectory.listFiles()));
 
         listView = root.findViewById(R.id.listView);
 
-        //ArrayAdapter<File> adapter = new ArrayAdapter<File>(getActivity(), R.layout.record_item, files);
+        RefreshAdapter();
 
-        ListAdapter adapter = new ListAdapter(getContext(), files);
-
-        listView.setAdapter(adapter);
 
         return root;
     }
 
-    public ArrayList<File> FindAudioFile(File file){
+    public void RefreshAdapter() {
+        ListAdapter adapter = new ListAdapter(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())));
+        listView.setAdapter(adapter);
+    }
+
+    public ArrayList<File> FindAudioFile(File file) {
         ArrayList<File> arrayList = new ArrayList<>();
 
         File[] files = file.listFiles();
 
-        for (File singlefile: files){
-            if (singlefile.isDirectory() && !singlefile.isHidden()){
+        for (File singlefile : files) {
+            if (singlefile.isDirectory() && !singlefile.isHidden()) {
                 arrayList.addAll(FindAudioFile(singlefile));
-            }
-            else{
-                if (singlefile.getName().endsWith(".wav")){
+            } else {
+                if (singlefile.getName().endsWith(".wav")) {
                     arrayList.add(singlefile);
                 }
             }
@@ -79,14 +71,14 @@ public class RecordsFragment extends Fragment {
         return arrayList;
     }
 
-    private void DisplayAudioFiles(){
+    private void DisplayAudioFiles() {
         ContextWrapper contextWrapper = new ContextWrapper(getContext());
         File musicDirectory = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
 
         final ArrayList<File> myFiles = FindAudioFile(musicDirectory.getAbsoluteFile());
 
-        String [] items = new String[myFiles.size()];
-        for (int i = 0; i<myFiles.size(); i++){
+        String[] items = new String[myFiles.size()];
+        for (int i = 0; i < myFiles.size(); i++) {
             items[i] = myFiles.get(i).getName().replace(".wav", "");
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.record_item, items);

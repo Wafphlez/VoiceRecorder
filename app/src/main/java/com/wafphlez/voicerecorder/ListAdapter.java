@@ -35,37 +35,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class ListAdapter extends ArrayAdapter<File> {
+public class ListAdapter extends ArrayAdapter<Recording> {
 
     private final int layout;
     boolean isPlaying;
     MediaPlayer mp = null;
+    ImageButton prevPlayed;
 
-    public ListAdapter(@NonNull Context context, ArrayList<File> files) {
-        super(context, R.layout.record_item, files);
+    public ListAdapter(@NonNull Context context, ArrayList<Recording> recordings) {
+        super(context, R.layout.record_item, recordings);
         layout = R.layout.record_item;
 
-    }
-
-
-    public void audioPlayer(String path, String fileName) {
-        //set up MediaPlayer
-        MediaPlayer mp = new MediaPlayer();
-
-        try {
-            mp.setDataSource(path + File.separator + fileName);
-            mp.prepare();
-            mp.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        File file = getItem(position);
+        File file = getItem(position).file;
 
         ViewHolder mainViewHolder = null;
 
@@ -74,57 +61,23 @@ public class ListAdapter extends ArrayAdapter<File> {
 
             TextView name = (TextView) convertView.findViewById(R.id.recordName);
             TextView date = (TextView) convertView.findViewById(R.id.recordDate);
-            ImageButton edit = (ImageButton) convertView.findViewById(R.id.editName);
+            ImageButton deleteButton = (ImageButton) convertView.findViewById(R.id.editName);
             ImageButton play = (ImageButton) convertView.findViewById(R.id.playPause);
 
-            edit.setOnClickListener(new View.OnClickListener() {
+            deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getContext(), name.getText(), Toast.LENGTH_SHORT).show();
 
-                    AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
-
-                    editDialog.setTitle("Record title");
-
-                    EditText input = new EditText(getContext());
-                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-                    input.setText(name.getText().toString());
-
-                    editDialog.setView(input);
-
-                    editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-//                            name.setText(input.getText().toString());
-//                            File newFile = new File(file.getPath().replace("/" + name.getText(), ""), input.getText().toString());
-//                            file.renameTo(newFile);
-//
-//                            file = new File(newFile.toString());
-//
-//                            File ffile = new File(file.toString());
-//                            ffile=newFile;
-//
-//                            file.delete();
-                            //name.setText(file.getName());
-                            Toast.makeText(getContext(), file.getName(), Toast.LENGTH_SHORT).show();
-                            //file = newFile;
-
-                        }
-                    });
-
-                    editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-                    editDialog.show();
                 }
             });
 
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    if (prevPlayed != null){
+                        prevPlayed.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+                    }
 
                     if (isPlaying) {
                         try {
@@ -138,7 +91,7 @@ public class ListAdapter extends ArrayAdapter<File> {
                         }
 
                         play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-
+                        prevPlayed = play;
                         isPlaying = false;
                     } else {
                         try {
@@ -174,12 +127,12 @@ public class ListAdapter extends ArrayAdapter<File> {
                 }
             });
 
-            ViewHolder viewHolder = new ViewHolder(name, date, edit, play);
+            ViewHolder viewHolder = new ViewHolder(name, date, deleteButton, play);
 
             convertView.setTag(viewHolder);
         } else {
             mainViewHolder = (ViewHolder) convertView.getTag();
-            mainViewHolder.name.setText(getItem(position).getName());
+            mainViewHolder.name.setText(getItem(position).file.getName());
         }
 
         TextView name = (TextView) convertView.findViewById(R.id.recordName);
@@ -189,45 +142,6 @@ public class ListAdapter extends ArrayAdapter<File> {
 
         name.setText(file.getName().replace(".wav", ""));
         date.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
-
-//        Uri uri = Uri.parse(file.getAbsolutePath());
-//        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-//        mmr.setDataSource(getContext(), uri);
-//        String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//        int milliseconds = Integer.parseInt(durationStr);
-//
-//        int seconds = (int) (milliseconds / 1000) % 60;
-//        int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
-//
-//        String time = minutes + ":" + seconds;
-//
-//
-//        MediaPlayer mp = new MediaPlayer();
-
-//        playPause.setOnClickListener(new View.OnClickListener(){
-//
-//            public void onClick(View v) {
-//                try {
-//                    mp.setDataSource(file.getAbsoluteFile() + "/" + file.getName());
-//
-//                    mp.prepare();
-//                    mp.start();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Toast.makeText(getContext(), recordName.getText(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        stop.setOnClickListener(new View.OnClickListener(){
-//
-//            public void onClick(View v) {
-//                mp.stop();
-//                Toast.makeText(getContext(), recordName.getText(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
 
         return convertView;
     }

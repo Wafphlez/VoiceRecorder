@@ -1,4 +1,4 @@
-package com.wafphlez.voicerecorder;
+package com.wafphlez.voicerecorder.ui.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.wafphlez.voicerecorder.R;
 
 public class WelcomeScreenActivity extends AppCompatActivity {
 

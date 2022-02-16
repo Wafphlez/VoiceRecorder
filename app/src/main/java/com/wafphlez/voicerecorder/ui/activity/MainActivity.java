@@ -1,4 +1,4 @@
-package com.wafphlez.voicerecorder;
+package com.wafphlez.voicerecorder.ui.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.wafphlez.voicerecorder.R;
 import com.wafphlez.voicerecorder.databinding.ActivityMainBinding;
 
 import androidx.appcompat.app.AppCompatActivity;

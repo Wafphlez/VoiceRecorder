@@ -7,13 +7,13 @@ import android.widget.TextView;
 public class ViewHolder {
     TextView name;
     TextView date;
-    ImageButton editButton;
+    ImageButton deleteButton;
     ImageButton playPauseButton;
 
-    public ViewHolder(TextView name, TextView date, ImageButton editButton, ImageButton playPauseButton){
+    public ViewHolder(TextView name, TextView date, ImageButton deleteButton, ImageButton playPauseButton){
         this.name = name;
         this.date = date;
-        this.editButton = editButton;
+        this.deleteButton = deleteButton;
         this.playPauseButton = playPauseButton;
     }
 
