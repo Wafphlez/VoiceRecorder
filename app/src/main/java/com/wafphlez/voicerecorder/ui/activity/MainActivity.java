@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.wafphlez.voicerecorder.Helper;
 import com.wafphlez.voicerecorder.R;
 import com.wafphlez.voicerecorder.databinding.ActivityMainBinding;
 
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+        Helper.GetRecordings(Helper.GetFiles(getApplicationContext()));
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

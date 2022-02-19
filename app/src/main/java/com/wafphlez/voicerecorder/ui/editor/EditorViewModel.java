@@ -1,4 +1,4 @@
-package com.wafphlez.voicerecorder.ui.settings;
+package com.wafphlez.voicerecorder.ui.editor;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -42,6 +42,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view"
+        android:dividerHeight="0dp"
+        android:divider="@null"
         tools:listitem="@layout/record_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -77,14 +77,16 @@
 
         <ImageButton
             android:id="@+id/editName"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="5dp"
-            android:background="@drawable/ic_pencil"
+            android:background="@drawable/ic_trash_can"
+            android:backgroundTint="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="10dp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout"

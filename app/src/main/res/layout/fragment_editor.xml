@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.EditorFragment">
+    tools:context=".ui.editor.EditorFragment">
 
     <TextView
         android:id="@+id/text_editor"
@@ -25,15 +25,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_editor"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -45,6 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
+                android:singleLine="true"
                 android:text="@string/save_name"
                 android:textColor="?colorPrimary"
                 android:textSize="16sp" />
@@ -233,10 +234,10 @@
         <!--            android:text="@string/debug"/>-->
 
 
-
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
@@ -250,31 +251,66 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:gravity="bottom|center_horizontal">
 
-            <ImageButton
-                android:id="@+id/prevSkip"
+            <TextView
+                android:id="@+id/currentTime"
                 android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:backgroundTint="?colorPrimary" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/record_time"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageButton
-                android:id="@+id/playPause"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:backgroundTint="?colorPrimary"
-                android:layout_marginHorizontal="10dp"/>
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="40dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/allTime"
+                app:layout_constraintStart_toEndOf="@+id/currentTime"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/nextSkip"
+                <ImageButton
+                    android:id="@+id/prevSkip"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_skip_backward"
+                    android:backgroundTint="?colorPrimary" />
+
+                <ImageButton
+                    android:id="@+id/playPause"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="@drawable/ic_play_record_button" />
+
+                <ImageButton
+                    android:id="@+id/nextSkip"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ic_skip_forward"
+                    android:backgroundTint="?colorPrimary" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/allTime"
                 android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:backgroundTint="?colorPrimary" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:text="@string/record_time"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <SeekBar
             android:id="@+id/audioSlider"
@@ -283,8 +319,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:max="100"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
             android:progress="0"
             android:progressTint="?colorPrimary"
             android:thumb="@drawable/thumb_image"

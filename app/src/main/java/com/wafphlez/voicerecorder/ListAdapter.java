@@ -75,49 +75,35 @@ public class ListAdapter extends ArrayAdapter<Recording> {
                 @Override
                 public void onClick(View view) {
 
-                    if (prevPlayed != null){
-                        prevPlayed.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-                    }
-
-                    if (isPlaying) {
+                    if (mp != null && mp.isPlaying()) {
                         try {
                             mp.reset();
                             mp.prepare();
                             mp.stop();
                             mp.release();
                             mp = null;
+
+                            play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-                        play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-                        prevPlayed = play;
-                        isPlaying = false;
-                    } else {
+                    }
+                    else {
                         try {
                             mp = new MediaPlayer();
-
-                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-
-                                    play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-
-                                    isPlaying = false;
-                                }
-
-                            });
 
                             mp.setDataSource(file.getPath());
                             mp.prepare();
                             mp.start();
+
+                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+                                }
+                            });
+
                             play.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_pause_record_button));
-
-                            isPlaying = true;
-
-                            Toast.makeText(getContext(), name.getText() + " playing...", Toast.LENGTH_SHORT).show();
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
