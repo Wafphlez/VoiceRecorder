@@ -9,7 +9,7 @@
     <string name="start_recording">Start Recording</string>
     <string name="save_name">Save_00.00.0000_00-00-00</string>
     <string name="record_current_time">00:00</string>
-    <string name="record_time">99:99</string>
+    <string name="record_time">00:00</string>
     <string name="stop_recording">Stop Recording</string>
     <string name="color_theme">Color Theme</string>
     <string name="language">Language</string>
@@ -23,4 +23,5 @@
     <string name="sample_number">0</string>
     <string name="pitch">Pitch</string>
     <string name="debug">Debug</string>
+    <string name="audioFormat">.m4a</string>
 </resources>

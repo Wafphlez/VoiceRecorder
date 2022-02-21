@@ -30,6 +30,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
+import com.wafphlez.voicerecorder.Helper;
 import com.wafphlez.voicerecorder.R;
 
 import java.io.File;
@@ -102,35 +103,6 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    public void runtimePermission() {
-
-        Dexter.withContext(getContext()).withPermission(Manifest.permission.RECORD_AUDIO).withListener(new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-
-            }
-
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-                Toast.makeText(getContext(), "Please add the permission to use your microphone for app to work!", Toast.LENGTH_SHORT).show();
-
-                PermissionListener dialogPermissionListener =
-                        DialogOnDeniedPermissionListener.Builder
-                                .withContext(getContext())
-                                .withTitle("Camera permission")
-                                .withMessage("Camera permission is needed to take pictures of your cat")
-                                .withButtonText(android.R.string.ok)
-                                .withIcon(R.mipmap.ic_launcher)
-                                .build();
-            }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
-                permissionToken.continuePermissionRequest();
-            }
-        }).check();
-    }
-
     public void StartRecording(View view) {
         try {
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
@@ -141,8 +113,10 @@ public class HomeFragment extends Fragment {
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+            mediaRecorder.setAudioEncodingBitRate(16*44100);
+            mediaRecorder.setAudioSamplingRate(44100);
             mediaRecorder.setOutputFile(getRecordingFilePath());
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             mediaRecorder.prepare();
             mediaRecorder.start();
 
@@ -206,9 +180,10 @@ public class HomeFragment extends Fragment {
 
             timerTask.cancel();
             time = 0.0;
+            timerTextView.setText(GetTimerText());
+            Helper.GetRecordings(Helper.GetFiles(getContext()));
 
-        } catch (Exception ex) {
-        }
+        } catch (Exception ex) { }
     }
 
 
@@ -230,7 +205,7 @@ public class HomeFragment extends Fragment {
 
     private String getFileName() {
         String date = new SimpleDateFormat("dd.MM.yyyy_HH-mm-ss", Locale.getDefault()).format(new Date());
-        return "Save_" + date + ".wav";
+        return "Save_" + date + ".m4a";
     }
 
 }

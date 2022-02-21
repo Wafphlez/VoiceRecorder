@@ -25,12 +25,12 @@ import java.util.ArrayList;
 
 public class RecordsFragment extends Fragment {
 
-    private RecordsViewModel recordsViewModel;
     public ListView listView;
+    ListAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        recordsViewModel = new ViewModelProvider(this).get(RecordsViewModel.class);
+        RecordsViewModel recordsViewModel = new ViewModelProvider(this).get(RecordsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_records, container, false);
         final TextView textView = root.findViewById(R.id.text_records);
         recordsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -40,18 +40,16 @@ public class RecordsFragment extends Fragment {
             }
         });
 
-
         listView = root.findViewById(R.id.listView);
 
         RefreshAdapter();
-
 
         return root;
     }
 
     public void RefreshAdapter() {
-        ListAdapter adapter = new ListAdapter(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())));
-        listView.setAdapter(adapter);
+            adapter = new ListAdapter(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())));
+            listView.setAdapter(adapter);
     }
 
     public ArrayList<File> FindAudioFile(File file) {
@@ -63,26 +61,11 @@ public class RecordsFragment extends Fragment {
             if (singlefile.isDirectory() && !singlefile.isHidden()) {
                 arrayList.addAll(FindAudioFile(singlefile));
             } else {
-                if (singlefile.getName().endsWith(".wav")) {
+                if (singlefile.getName().endsWith(".m4a")) {
                     arrayList.add(singlefile);
                 }
             }
         }
         return arrayList;
     }
-
-    private void DisplayAudioFiles() {
-        ContextWrapper contextWrapper = new ContextWrapper(getContext());
-        File musicDirectory = contextWrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-
-        final ArrayList<File> myFiles = FindAudioFile(musicDirectory.getAbsoluteFile());
-
-        String[] items = new String[myFiles.size()];
-        for (int i = 0; i < myFiles.size(); i++) {
-            items[i] = myFiles.get(i).getName().replace(".wav", "");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.record_item, items);
-        listView.setAdapter(adapter);
-    }
-
 }

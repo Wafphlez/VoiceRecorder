@@ -1,8 +1,12 @@
 package com.wafphlez.voicerecorder.ui.editor;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -110,7 +114,7 @@ public class EditorFragment extends Fragment {
             public void run() {
                 audioSlider.setProgress(mp.getCurrentPosition());
                 currentTime.setText(ConvertToTime(mp.getCurrentPosition()));
-                handler.postDelayed(this, 500);
+                handler.postDelayed(this, 250);
             }
         };
 
@@ -119,29 +123,10 @@ public class EditorFragment extends Fragment {
             public void onClick(View view) {
                 if (!mp.isPlaying()) {
                     //play
-                    mp.start();
-
-                    audioSlider.setMax(mp.getDuration());
-
-                    handler.postDelayed(runnable, 0);
-
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-                        }
-                    });
-
-                    playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_pause_record_button));
+                    playAudio();
                 } else {
                     //pause
-                    try {
-                        mp.pause();
-
-                        playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    pauseAudio();
 
                 }
             }
@@ -234,7 +219,16 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                recording.SetVolume(seekBar.getProgress());
+                recording.SetVolume(seekBar.getProgress() + seekBar.getMax() / 2);
+
+                AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+                int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                int maxVolumeLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                int volumePercent = (int) (((float) volumeLevel / maxVolumeLevel));
+                Toast.makeText(getContext(), volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2) + "", 0).show();
+                mp.setVolume(volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2),
+                        volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2));
+
             }
         });
 
@@ -246,27 +240,45 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //pauseAudio();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 recording.SetPitch(seekBar.getProgress());
 
-                Toast.makeText(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext()))
-                        .get(audioCounter).pitch + " " + recording.pitch, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), (float)recording.pitch / (float)pitchSlider.getMax() + "", 0).show();
+
+                PlaybackParams params = new PlaybackParams();
+                params.setPitch((float) (recording.pitch / 10f));
+
+                if (mp.isPlaying()) {
+                    pauseAudio();
+                    mp.stop();
+                    try {
+                        mp.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mp.setPlaybackParams(params);
+                    playAudio();
+                } else {
+
+                    mp.setPlaybackParams(params);
+                    pauseAudio();
+                }
+
+
             }
         });
 
         audioSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
@@ -278,6 +290,46 @@ public class EditorFragment extends Fragment {
         return root;
     }
 
+    private void pauseAudio() {
+        try {
+            mp.pause();
+            playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void playAudio() {
+        mp.start();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        audioSlider.setMax(mp.getDuration());
+        handler.postDelayed(runnable, 0);
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+            }
+        });
+
+        playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_pause_record_button));
+    }
+
+    private void stopAudio() {
+        playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+        mp.reset();
+        mp.release();
+        mp = new MediaPlayer();
+
+        try {
+            mp.setDataSource(Helper.GetRecording(audioCounter).file.getPath());
+            mp.prepare();
+        } catch (Exception ex) {
+            allTime.setText("00:00");
+            return;
+        }
+    }
+
     private String ConvertToTime(int duration) {
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(duration),
@@ -286,7 +338,9 @@ public class EditorFragment extends Fragment {
     }
 
     private void RefreshAudioInfo() {
-
+        if (Helper.GetFiles(getContext()).size() == 0) {
+            return;
+        }
         recording = Helper.GetRecording(audioCounter);
 
         File file = recording.file;
@@ -303,23 +357,14 @@ public class EditorFragment extends Fragment {
         size.setText(file_size + "KB");
         updateVisualizer(fileToBytes(file));
 
-        playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
-        mp.reset();
-        mp.stop();
-        mp.release();
-        mp = new MediaPlayer();
-        try {
-            mp.setDataSource(Helper.GetRecording(audioCounter).file.getPath());
-            mp.prepare();
-        } catch (Exception ex) {
-            allTime.setText("00:00");
-            return;
-        }
+        stopAudio();
 
         int duration = mp.getDuration();
         String sDuration = ConvertToTime(duration);
         allTime.setText(sDuration);
+        length.setText(sDuration);
     }
+
 
     public void SetSliderValue(SeekBar seekBar, TextView textView) {
         int max = seekBar.getMax();

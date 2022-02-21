@@ -13,7 +13,6 @@ import java.util.List;
 public class Helper {
 
     private static ArrayList<Recording> recordings = new ArrayList<>();
-    private static ArrayList<Recording> recordingsFiles = new ArrayList<>();
     private static ArrayList<File> files = new ArrayList<>();
 
     public static ArrayList<File> GetFiles(Context context) {
@@ -25,29 +24,29 @@ public class Helper {
 
 
     public static ArrayList<Recording> GetRecordings(ArrayList<File> files) {
-
+        recordings.clear();
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
 
-            if (recordingsFiles.contains(file)){
-                continue;
-            }
-
             Recording recording = new Recording(file.getName(), new Date(file.lastModified()), "?", file, 0, 0);
+
             recordings.add(recording);
         }
 
         return recordings;
     }
 
-    public static Recording GetRecording(int index){
+    public static Recording GetRecording(int index) {
         return recordings.get(index);
     }
 
     public static String GetAudioName(String name) {
-        return name.replace(".wav", "");
+        return name.replace(".m4a", "");
     }
 
-
+    public static void RemoveRecording(Recording recording){
+        recording.file.delete();
+        recordings.remove(recording);
+    }
 
 }
