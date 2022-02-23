@@ -1,12 +1,10 @@
 package com.wafphlez.voicerecorder.ui.editor;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -50,13 +48,13 @@ public class EditorFragment extends Fragment {
     TextView size;
     TextView length;
 
-    TextView volumeSliderValue;
+    TextView speedSliderValue;
     TextView pitchSliderValue;
 
     TextView currentTime;
     TextView allTime;
 
-    SeekBar volumeSlider;
+    SeekBar speedSlider;
     SeekBar pitchSlider;
     SeekBar audioSlider;
 
@@ -83,9 +81,9 @@ public class EditorFragment extends Fragment {
         saveName = root.findViewById(R.id.saveName);
         size = root.findViewById(R.id.size);
         length = root.findViewById(R.id.length);
-        volumeSlider = root.findViewById(R.id.volumeSlider);
+        speedSlider = root.findViewById(R.id.speedSlider);
         pitchSlider = root.findViewById(R.id.pitchSlider);
-        volumeSliderValue = root.findViewById(R.id.volumeSliderValue);
+        speedSliderValue = root.findViewById(R.id.speedSliderValue);
         pitchSliderValue = root.findViewById(R.id.pitchSliderValue);
 
         editName = root.findViewById(R.id.editName);
@@ -98,6 +96,8 @@ public class EditorFragment extends Fragment {
         playPause = root.findViewById(R.id.playPause);
         nextSkip = root.findViewById(R.id.nextSkip);
         audioSlider = root.findViewById(R.id.audioSlider);
+
+        mp.stop();
 
         editorViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -114,7 +114,7 @@ public class EditorFragment extends Fragment {
             public void run() {
                 audioSlider.setProgress(mp.getCurrentPosition());
                 currentTime.setText(ConvertToTime(mp.getCurrentPosition()));
-                handler.postDelayed(this, 250);
+                handler.postDelayed(this, 500);
             }
         };
 
@@ -150,18 +150,6 @@ public class EditorFragment extends Fragment {
                 editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-//                            name.setText(input.getText().toString());
-//                            File newFile = new File(file.getPath().replace("/" + name.getText(), ""), input.getText().toString());
-//                            file.renameTo(newFile);
-//
-//                            file = new File(newFile.toString());
-//
-//                            File ffile = new File(file.toString());
-//                            ffile=newFile;
-//
-//                            file.delete();
-                        //name.setText(file.getName());
-
                         Toast.makeText(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())).get(i).file.getName(), Toast.LENGTH_SHORT).show();
 
                     }
@@ -206,10 +194,10 @@ public class EditorFragment extends Fragment {
             }
         });
 
-        volumeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        speedSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                SetSliderValue(seekBar, volumeSliderValue);
+                SetSliderValue(seekBar, speedSliderValue);
             }
 
             @Override
@@ -219,15 +207,25 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                recording.SetVolume(seekBar.getProgress() + seekBar.getMax() / 2);
+                recording.SetSpeed(seekBar.getProgress());
 
-                AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-                int volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                int maxVolumeLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                int volumePercent = (int) (((float) volumeLevel / maxVolumeLevel));
-                Toast.makeText(getContext(), volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2) + "", 0).show();
-                mp.setVolume(volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2),
-                        volumeLevel * seekBar.getProgress() / (seekBar.getMax() / 2));
+                PlaybackParams params = mp.getPlaybackParams();
+
+                int real = recording.speed - seekBar.getMax() / 2;
+                float abs = Math.abs(real) + 1;
+                float val = 0;
+
+                if (real < 0) {
+                    val = 1.0f / abs;
+                } else if (real > 0) {
+                    val = abs;
+                } else {
+                    val = 1;
+                }
+
+                mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(val));
+
+                pauseAudio();
 
             }
         });
@@ -235,46 +233,43 @@ public class EditorFragment extends Fragment {
         pitchSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                SetSliderValue(seekBar, pitchSliderValue);
+                SetSliderValue(pitchSlider, pitchSliderValue);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                //pauseAudio();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 recording.SetPitch(seekBar.getProgress());
 
-                //Toast.makeText(getContext(), (float)recording.pitch / (float)pitchSlider.getMax() + "", 0).show();
+                PlaybackParams params = mp.getPlaybackParams();
 
-                PlaybackParams params = new PlaybackParams();
-                params.setPitch((float) (recording.pitch / 10f));
+                int real = recording.pitch - seekBar.getMax() / 2;
+                float abs = Math.abs(real) + 1;
 
-                if (mp.isPlaying()) {
-                    pauseAudio();
-                    mp.stop();
-                    try {
-                        mp.prepare();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    mp.setPlaybackParams(params);
-                    playAudio();
+                if (real < 0) {
+                    float val = 1.0f / (abs);
+                    params.setPitch(val);
+                } else if (real > 0) {
+                    params.setPitch((float) (abs));
                 } else {
-
-                    mp.setPlaybackParams(params);
-                    pauseAudio();
+                    params.setPitch((float) (1));
                 }
 
 
+
+                mp.setPlaybackParams(params);
+
+                pauseAudio();
             }
         });
 
         audioSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                //mp.seekTo(seekBar.getProgress());
             }
 
             @Override
@@ -290,6 +285,23 @@ public class EditorFragment extends Fragment {
         return root;
     }
 
+    private void SetSliderValue(SeekBar seekBar, TextView textView) {
+        int real = seekBar.getProgress() - seekBar.getMax() / 2;
+        int abs = Math.abs(real) + 1;
+
+        String str = "";
+
+        if (real < 0) {
+            str = "1/" + abs + "x";
+        } else if (real > 0) {
+            str = abs + "x";
+        } else {
+            str = "1x";
+        }
+
+        textView.setText(str);
+    }
+
     private void pauseAudio() {
         try {
             mp.pause();
@@ -300,7 +312,6 @@ public class EditorFragment extends Fragment {
     }
 
     private void playAudio() {
-        mp.start();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         audioSlider.setMax(mp.getDuration());
         handler.postDelayed(runnable, 0);
@@ -309,10 +320,12 @@ public class EditorFragment extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
+                audioSlider.setProgress(audioSlider.getMax());
             }
         });
 
         playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_pause_record_button));
+        mp.start();
     }
 
     private void stopAudio() {
@@ -349,10 +362,11 @@ public class EditorFragment extends Fragment {
 
         saveName.setText(Helper.GetAudioName(file.getName()));
         dateChanged.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
-        volumeSlider.setProgress(recording.volume + pitchSlider.getMax() / 2);
-        SetSliderValue(volumeSlider, volumeSliderValue);
+        speedSlider.setProgress(recording.speed);
+        pitchSlider.setProgress(recording.pitch);
+        SetSliderValue(speedSlider, speedSliderValue);
         SetSliderValue(pitchSlider, pitchSliderValue);
-        pitchSlider.setProgress(recording.pitch + pitchSlider.getMax() / 2);
+
         int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
         size.setText(file_size + "KB");
         updateVisualizer(fileToBytes(file));
@@ -363,24 +377,6 @@ public class EditorFragment extends Fragment {
         String sDuration = ConvertToTime(duration);
         allTime.setText(sDuration);
         length.setText(sDuration);
-    }
-
-
-    public void SetSliderValue(SeekBar seekBar, TextView textView) {
-        int max = seekBar.getMax();
-        int progressRaw;
-        int progress;
-
-        progressRaw = seekBar.getProgress();
-        progress = progressRaw - max / 2;
-        String value = "";
-
-        if (progress > 0) {
-            value = "+" + progress;
-        } else {
-            value = progress + "";
-        }
-        textView.setText(value);
     }
 
     public void updateVisualizer(byte[] bytes) {

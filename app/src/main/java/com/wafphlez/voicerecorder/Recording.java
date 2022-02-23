@@ -8,20 +8,20 @@ public class Recording {
     public Date date;
     public String duration;
     public File file;
-    public int volume;
+    public int speed;
     public int pitch;
 
-    public Recording(String name, Date date, String duration, File file, int volume, int pitch){
+    public Recording(String name, Date date, String duration, File file, int speed, int pitch){
         this.name = name;
         this.date = date;
         this.duration = duration;
         this.file = file;
-        this.volume = volume;
+        this.speed = speed;
         this.pitch = pitch;
     }
 
-    public void SetVolume(int volume){
-        this.volume = volume;
+    public void SetSpeed(int speed){
+        this.speed = speed;
     }
 
     public void SetPitch(int pitch){

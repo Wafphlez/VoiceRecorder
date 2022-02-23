@@ -28,7 +28,7 @@ public class Helper {
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
 
-            Recording recording = new Recording(file.getName(), new Date(file.lastModified()), "?", file, 0, 0);
+            Recording recording = new Recording(file.getName(), new Date(file.lastModified()), "?", file, 3, 5);
 
             recordings.add(recording);
         }
