@@ -72,6 +72,12 @@ public class EditorFragment extends Fragment {
     int audioCounter = 0;
     public PlayerVisualizerView playerVisualizerView;
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopAudio();
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         editorViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
@@ -98,7 +104,7 @@ public class EditorFragment extends Fragment {
         nextSkip = root.findViewById(R.id.nextSkip);
         audioSlider = root.findViewById(R.id.audioSlider);
 
-        mp.stop();
+        RefreshAudioInfo();
 
         editorViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -107,15 +113,13 @@ public class EditorFragment extends Fragment {
             }
         });
 
-        RefreshAudioInfo();
-
 
         runnable = new Runnable() {
             @Override
             public void run() {
                 audioSlider.setProgress(mp.getCurrentPosition());
                 currentTime.setText(ConvertToTime(mp.getCurrentPosition()));
-                handler.postDelayed(this, 500);
+                handler.postDelayed(this, 16);
             }
         };
 
@@ -136,8 +140,6 @@ public class EditorFragment extends Fragment {
         editName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), saveName.getText(), Toast.LENGTH_SHORT).show();
-
                 AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
 
                 editDialog.setTitle("Record title");
@@ -151,11 +153,9 @@ public class EditorFragment extends Fragment {
                 editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-//                        Toast.makeText(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())).get(i).file.getName(), Toast.LENGTH_SHORT).show();
-
-                        File newFile = new File(recording.file.getPath().replace(recording.file.getName(),input.getText()));
+                        File newFile = new File(recording.file.getPath().replace(recording.file.getName(),input.getText()).concat(".m4a"));
                         recording.file.renameTo(newFile);
-
+                        recording.file = Helper.GetFiles(getContext()).get(audioCounter);
                         RefreshAudioInfo();
                     }
                 });
@@ -207,14 +207,16 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                if (mp.isPlaying()){
+                    pauseAudio();
+                }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 recording.SetSpeed(seekBar.getProgress());
 
-                int real = recording.speed - seekBar.getMax() / 2;
+                int real = seekBar.getProgress() - seekBar.getMax() / 2;
                 float abs = Math.abs(real) + 1;
                 float val = 0;
 
@@ -241,6 +243,9 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                if (mp.isPlaying()){
+                    pauseAudio();
+                }
             }
 
             @Override
@@ -249,7 +254,7 @@ public class EditorFragment extends Fragment {
 
                 PlaybackParams params = mp.getPlaybackParams();
 
-                int real = recording.pitch - seekBar.getMax() / 2;
+                int real = seekBar.getProgress() - seekBar.getMax() / 2;
                 float abs = Math.abs(real) + 1;
 
                 if (real < 0) {
@@ -261,8 +266,6 @@ public class EditorFragment extends Fragment {
                     params.setPitch((float) (1));
                 }
 
-
-
                 mp.setPlaybackParams(params);
 
                 pauseAudio();
@@ -272,7 +275,9 @@ public class EditorFragment extends Fragment {
         audioSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                //mp.seekTo(seekBar.getProgress());
+                if (!mp.isPlaying()){
+                    mp.seekTo(seekBar.getProgress());
+                }
             }
 
             @Override
@@ -358,15 +363,17 @@ public class EditorFragment extends Fragment {
         if (Helper.GetFiles(getContext()).size() == 0) {
             return;
         }
+
+        stopAudio();
+
         recording = Helper.GetRecording(audioCounter);
 
         File file = recording.file;
 
         Date lastModDate = new Date(file.lastModified());
 
-        saveName.setText(recording.file.getName());
+        saveName.setText(recording.file.getName().replace(".m4a", ""));
         saveName.setSelected(true);
-//        saveName.setText(Helper.GetAudioName(file.getName()));
         dateChanged.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
         speedSlider.setProgress(recording.speed);
         pitchSlider.setProgress(recording.pitch);
@@ -375,9 +382,9 @@ public class EditorFragment extends Fragment {
 
         int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
         size.setText(file_size + "KB");
+
         updateVisualizer(fileToBytes(file));
 
-        stopAudio();
 
         int duration = mp.getDuration();
         String sDuration = ConvertToTime(duration);

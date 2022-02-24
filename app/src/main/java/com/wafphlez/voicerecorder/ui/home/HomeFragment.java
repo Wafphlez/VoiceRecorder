@@ -1,6 +1,7 @@
 package com.wafphlez.voicerecorder.ui.home;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
@@ -57,7 +58,6 @@ public class HomeFragment extends Fragment {
     TimerTask timerTask;
 
     Double time = 0.0;
-    int counter = 0;
 
     boolean canStartRecording = true;
     boolean isRecording = false;
@@ -70,8 +70,10 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         final TextView textView = root.findViewById(R.id.text_home);
         timerTextView = root.findViewById(R.id.timer);
+        recordButton = root.findViewById(R.id.recordButton);
 
         timer = new Timer();
+        getMicrophonePermission();
 
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -80,7 +82,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        recordButton = (ImageButton) root.findViewById(R.id.recordButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,22 +89,24 @@ public class HomeFragment extends Fragment {
                     return;
                 }
 
-                if (isRecording) {
-                    StopRecording(v);
+                if (!isRecording) {
+                    StartRecording();
                 } else {
-                    StartRecording(v);
+                    StopRecording();
                 }
-
-
             }
         });
 
-        getMicrophonePermission();
 
         return root;
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        StopRecording();
+    }
 
-    public void StartRecording(View view) {
+    public void StartRecording() {
         try {
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
                 getMicrophonePermission();
@@ -152,20 +155,21 @@ public class HomeFragment extends Fragment {
         return FormatTime(mins, secs);
     }
 
+    @SuppressLint("DefaultLocale")
     public String FormatTime(int mins, int secs) {
 
         if (mins < 10) {
             minutes = "0" + mins;
         }
 
-        String seconds = String.format("%02d", secs);
+        seconds = String.format("%02d", secs);
 
 
         return (minutes + ":" + seconds);
 
     }
 
-    public void StopRecording(View view) {
+    public void StopRecording() {
         try {
             mediaRecorder.stop();
             mediaRecorder.release();
@@ -183,9 +187,8 @@ public class HomeFragment extends Fragment {
             timerTextView.setText(GetTimerText());
             Helper.GetRecordings(Helper.GetFiles(getContext()));
 
-        } catch (Exception ex) { }
+        } catch (Exception ex) { ex.printStackTrace(); }
     }
-
 
     private boolean isMicrophonePresent() {
         return getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
