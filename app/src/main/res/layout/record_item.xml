@@ -31,9 +31,9 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:gravity="left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="left"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/recordDate"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -44,17 +44,21 @@
                     android:id="@+id/recordName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollbars="horizontal"
+                    android:scrollHorizontally="true"
                     android:text="@string/save_name"
                     android:textColor="?colorPrimary"
                     android:textSize="16sp"
-                    android:maxLines="1"
-                    android:scrollbars = "horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/editName"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
 
 
             </LinearLayout>
@@ -71,7 +75,6 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -83,10 +86,10 @@
             android:layout_marginHorizontal="5dp"
             android:background="@drawable/ic_trash_can"
             android:backgroundTint="?colorPrimary"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            android:padding="10dp"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout"
@@ -99,19 +102,18 @@
             app:layout_constraintTop_toTopOf="parent">
 
 
-
             <ImageButton
                 android:id="@+id/playPause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ic_play_record_button"
+                android:clickable="true"
                 android:contentDescription="@string/start_recording"
+                android:focusable="true"
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:clickable="true"
-                android:focusable="true" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

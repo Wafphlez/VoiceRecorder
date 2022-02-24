@@ -1,5 +1,6 @@
 package com.wafphlez.voicerecorder.ui.editor;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.media.AudioManager;
@@ -150,8 +151,12 @@ public class EditorFragment extends Fragment {
                 editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())).get(i).file.getName(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), Helper.GetRecordings(Helper.GetFiles(getContext())).get(i).file.getName(), Toast.LENGTH_SHORT).show();
 
+                        File newFile = new File(recording.file.getPath().replace(recording.file.getName(),input.getText()));
+                        recording.file.renameTo(newFile);
+
+                        RefreshAudioInfo();
                     }
                 });
 
@@ -208,8 +213,6 @@ public class EditorFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 recording.SetSpeed(seekBar.getProgress());
-
-                PlaybackParams params = mp.getPlaybackParams();
 
                 int real = recording.speed - seekBar.getMax() / 2;
                 float abs = Math.abs(real) + 1;
@@ -343,6 +346,7 @@ public class EditorFragment extends Fragment {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private String ConvertToTime(int duration) {
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(duration),
@@ -360,7 +364,9 @@ public class EditorFragment extends Fragment {
 
         Date lastModDate = new Date(file.lastModified());
 
-        saveName.setText(Helper.GetAudioName(file.getName()));
+        saveName.setText(recording.file.getName());
+        saveName.setSelected(true);
+//        saveName.setText(Helper.GetAudioName(file.getName()));
         dateChanged.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
         speedSlider.setProgress(recording.speed);
         pitchSlider.setProgress(recording.pitch);
