@@ -74,8 +74,8 @@ public class ListAdapter extends ArrayAdapter<Recording> {
         Date lastModDate = new Date(file.lastModified());
 
         name.setText(file.getName().replace(".m4a", ""));
+        name.setSelected(true);
         date.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
-
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
