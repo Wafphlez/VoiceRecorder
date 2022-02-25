@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Environment;
 
+import com.wafphlez.voicerecorder.ui.records.RecordsFragment;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +30,7 @@ public class Helper {
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
 
-            Recording recording = new Recording(file.getName(), new Date(file.lastModified()), "?", file, 3, 5);
+            Recording recording = new Recording(file.getName(), new Date(file.lastModified()), "??:??", file, 3, 5);
 
             recordings.add(recording);
         }
@@ -40,11 +42,22 @@ public class Helper {
         return recordings.get(index);
     }
 
+    public static int GetRecordingIndex(Recording recording) {
+        int counter = 0;
+        for (Recording record : recordings) {
+            if (record == recording){
+                return counter;
+            }
+            counter++;
+        }
+        return -1;
+    }
+
     public static String GetAudioName(String name) {
         return name.replace(".m4a", "");
     }
 
-    public static void RemoveRecording(Recording recording){
+    public static void RemoveRecording(Recording recording) {
         recording.file.delete();
         recordings.remove(recording);
     }

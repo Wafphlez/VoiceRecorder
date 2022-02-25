@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +42,7 @@ public class EditorFragment extends Fragment {
 
     private EditorViewModel editorViewModel;
 
-    TextView saveName;
+    TextView saveTitle;
 
     TextView dateChanged;
     TextView size;
@@ -63,12 +62,16 @@ public class EditorFragment extends Fragment {
     ImageButton prevSkip;
     ImageButton playPause;
     ImageButton editName;
+    ImageButton loop;
+
+    View loopIndicator;
 
     Recording recording;
     Handler handler = new Handler();
     Runnable runnable;
     MediaPlayer mp = new MediaPlayer();
 
+    boolean isLooping = false;
     int audioCounter = 0;
     public PlayerVisualizerView playerVisualizerView;
 
@@ -85,7 +88,7 @@ public class EditorFragment extends Fragment {
         final TextView textView = root.findViewById(R.id.text_editor);
 
         playerVisualizerView = root.findViewById(R.id.visualizer);
-        saveName = root.findViewById(R.id.saveName);
+        saveTitle = root.findViewById(R.id.saveTitle);
         size = root.findViewById(R.id.size);
         length = root.findViewById(R.id.length);
         speedSlider = root.findViewById(R.id.speedSlider);
@@ -93,12 +96,15 @@ public class EditorFragment extends Fragment {
         speedSliderValue = root.findViewById(R.id.speedSliderValue);
         pitchSliderValue = root.findViewById(R.id.pitchSliderValue);
 
+        loopIndicator = root.findViewById(R.id.loopIndicator);
+
         editName = root.findViewById(R.id.editName);
         dateChanged = root.findViewById(R.id.dateChanged);
 
         currentTime = root.findViewById(R.id.currentTime);
         allTime = root.findViewById(R.id.allTime);
 
+        loop = root.findViewById(R.id.loop);
         prevSkip = root.findViewById(R.id.prevSkip);
         playPause = root.findViewById(R.id.playPause);
         nextSkip = root.findViewById(R.id.nextSkip);
@@ -119,20 +125,37 @@ public class EditorFragment extends Fragment {
             public void run() {
                 audioSlider.setProgress(mp.getCurrentPosition());
                 currentTime.setText(ConvertToTime(mp.getCurrentPosition()));
-                handler.postDelayed(this, 16);
+                handler.postDelayed(this, 100);
             }
         };
+
+        saveTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTitle();
+            }
+        });
+
+        loop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pauseAudio();
+
+                if (isLooping) {
+                    stopLooping();
+                } else {
+                    startLooping();
+                }
+            }
+        });
 
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!mp.isPlaying()) {
-                    //play
                     playAudio();
                 } else {
-                    //pause
                     pauseAudio();
-
                 }
             }
         });
@@ -140,48 +163,15 @@ public class EditorFragment extends Fragment {
         editName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
-
-                editDialog.setTitle("Record title");
-
-                EditText input = new EditText(getContext());
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setText(saveName.getText().toString());
-
-                editDialog.setView(input);
-
-                editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        File newFile = new File(recording.file.getPath().replace(recording.file.getName(),input.getText()).concat(".m4a"));
-                        recording.file.renameTo(newFile);
-                        recording.file = Helper.GetFiles(getContext()).get(audioCounter);
-                        RefreshAudioInfo();
-                    }
-                });
-
-                editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                editDialog.show();
+                editTitle();
             }
         });
-
 
         nextSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (audioCounter >= Helper.GetFiles(getContext()).size() - 1) {
-                    audioCounter = 0;
-                } else {
-                    audioCounter++;
-                }
-
-                RefreshAudioInfo();
+                nextAudio();
             }
         });
 
@@ -189,13 +179,7 @@ public class EditorFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (audioCounter <= 0) {
-                    audioCounter = Helper.GetFiles(getContext()).size() - 1;
-                } else {
-                    audioCounter--;
-                }
-
-                RefreshAudioInfo();
+                prevAudio();
             }
         });
 
@@ -207,7 +191,7 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (mp.isPlaying()){
+                if (mp.isPlaying()) {
                     pauseAudio();
                 }
             }
@@ -243,7 +227,7 @@ public class EditorFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (mp.isPlaying()){
+                if (mp.isPlaying()) {
                     pauseAudio();
                 }
             }
@@ -275,7 +259,7 @@ public class EditorFragment extends Fragment {
         audioSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (!mp.isPlaying()){
+                if (!mp.isPlaying()) {
                     mp.seekTo(seekBar.getProgress());
                 }
             }
@@ -291,6 +275,73 @@ public class EditorFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public void editTitle() {
+        AlertDialog.Builder editDialog = new AlertDialog.Builder(getContext());
+
+        editDialog.setTitle("Record title");
+
+        EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setText(saveTitle.getText().toString());
+
+        editDialog.setView(input);
+
+        editDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                File newFile = new File(recording.file.getPath().replace(recording.file.getName(), input.getText()).concat(".m4a"));
+
+                recording.file.renameTo(newFile);
+                recording.file = Helper.GetFiles(getContext()).get(audioCounter);
+                Helper.GetRecordings(Helper.GetFiles(getContext()));
+
+                //audioCounter = Helper.GetRecordingIndex(recording);
+
+                RefreshAudioInfo();
+            }
+        });
+
+        editDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        editDialog.show();
+    }
+
+    private void startLooping() {
+        isLooping = true;
+        loopIndicator.setVisibility(View.VISIBLE);
+        mp.setLooping(isLooping);
+    }
+
+    private void stopLooping() {
+        isLooping = false;
+        loopIndicator.setVisibility(View.INVISIBLE);
+        mp.setLooping(isLooping);
+    }
+
+    private void nextAudio() {
+        if (audioCounter >= Helper.GetFiles(getContext()).size() - 1) {
+            audioCounter = 0;
+        } else {
+            audioCounter++;
+        }
+
+        RefreshAudioInfo();
+    }
+
+    private void prevAudio() {
+        if (audioCounter <= 0) {
+            audioCounter = Helper.GetFiles(getContext()).size() - 1;
+        } else {
+            audioCounter--;
+        }
+
+        RefreshAudioInfo();
     }
 
     private void SetSliderValue(SeekBar seekBar, TextView textView) {
@@ -327,6 +378,10 @@ public class EditorFragment extends Fragment {
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                if (isLooping) {
+                    playAudio();
+                    return;
+                }
                 playPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ic_play_record_button));
                 audioSlider.setProgress(audioSlider.getMax());
             }
@@ -372,8 +427,8 @@ public class EditorFragment extends Fragment {
 
         Date lastModDate = new Date(file.lastModified());
 
-        saveName.setText(recording.file.getName().replace(".m4a", ""));
-        saveName.setSelected(true);
+        saveTitle.setText(recording.file.getName().replace(".m4a", ""));
+        saveTitle.setSelected(true);
         dateChanged.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(lastModDate));
         speedSlider.setProgress(recording.speed);
         pitchSlider.setProgress(recording.pitch);

@@ -24,4 +24,5 @@
     <string name="pitch">Pitch</string>
     <string name="debug">Debug</string>
     <string name="audioFormat">.m4a</string>
+    <string name="title">Title</string>
 </resources>

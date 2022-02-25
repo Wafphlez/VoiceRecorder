@@ -100,6 +100,7 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -164,9 +165,7 @@ public class HomeFragment extends Fragment {
 
         seconds = String.format("%02d", secs);
 
-
         return (minutes + ":" + seconds);
-
     }
 
     public void StopRecording() {
@@ -180,7 +179,6 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getContext(), getFileName(), Toast.LENGTH_SHORT).show();
 
             isRecording = false;
-
 
             timerTask.cancel();
             time = 0.0;

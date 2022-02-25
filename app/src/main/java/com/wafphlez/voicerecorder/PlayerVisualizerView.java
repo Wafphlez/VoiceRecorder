@@ -52,10 +52,10 @@ public class PlayerVisualizerView extends View {
     private void init() {
         bytes = null;
 
-        playedStatePainting.setStrokeWidth(1f);
+        playedStatePainting.setStrokeWidth(2f);
         playedStatePainting.setAntiAlias(true);
         playedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.accent_red));
-        notPlayedStatePainting.setStrokeWidth(1f);
+        notPlayedStatePainting.setStrokeWidth(2f);
         notPlayedStatePainting.setAntiAlias(true);
         notPlayedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.dark_grey));
     }
